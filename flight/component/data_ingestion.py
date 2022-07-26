@@ -73,7 +73,7 @@ class DataIngestion:
         except Exception as e:
             raise FlightException(e,sys) from e
     
-    def drop_rows_with_exception(X : pd.DataFrame, tol = 1, columns = ["Airline","Total_Stops"],)->None:
+    def drop_rows_with_exception(self,X : pd.DataFrame, tol = 1, columns = ["Airline","Total_Stops"],)->None:
         try:
             drop_exp = False
             for col in columns:
@@ -90,7 +90,7 @@ class DataIngestion:
         except Exception as e:
             raise FlightException(e,sys) from e
     
-    def drop_duplicates(X : pd.DataFrame):
+    def drop_duplicates(self,X : pd.DataFrame):
         try:
             if X.duplicated().sum():
                 X.drop_duplicates(ignore_index=True,inplace=True)
@@ -110,16 +110,16 @@ class DataIngestion:
             flight_data_frame = pd.read_csv(flight_file_path)
 
             # drop rows with only one category count in any columnm
-            self.drop_rows_with_exception(X=flight_data_frame,)
+            self.drop_rows_with_exception(X=flight_data_frame)
             # drop Duplicate data
             self.drop_duplicates(X=flight_data_frame)
             
             # Stratify split 
             
-            min_price = flight_data_frame["Price"].describe("min")
-            q_one_price = flight_data_frame["Price"].describe("25%")
-            q_two_price = flight_data_frame["Price"].describe("50%")
-            q_three_price = flight_data_frame["Price"].describe("75%")
+            min_price = flight_data_frame["Price"].describe()["min"]
+            q_one_price = flight_data_frame["Price"].describe()["25%"]
+            q_two_price = flight_data_frame["Price"].describe()["50%"]
+            q_three_price = flight_data_frame["Price"].describe()["75%"]
             
             flight_data_frame["Price_cat"] = pd.cut(
                 flight_data_frame["Price"],
