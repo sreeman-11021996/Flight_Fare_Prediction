@@ -256,6 +256,7 @@ class ModelFactory:
     def execute_grid_search_operation(self, 
         initialized_model: InitializedModelDetail, input_feature,
         output_feature) -> GridSearchedBestModel:
+        
         """
         excute_grid_search_operation(): function will perform paramter search 
         operation and it will return you the best optimistic  model with best 
@@ -357,8 +358,8 @@ class ModelFactory:
         except Exception as e:
             raise FlightException(e, sys) from e
 
-    
-    def get_best_model_from_grid_searched_best_model_list(self,
+    @staticmethod
+    def get_best_model_from_grid_searched_best_model_list(
         grid_searched_best_model_list:List[GridSearchedBestModel],
         base_accuracy = 0.6 )->BestModel:
         try:
