@@ -15,10 +15,12 @@ numerical_columns:
   - Arrival_Time
   - Duration
 
-categorical_columns:
+categorical_columns_nominal:
   - Airline
   - Source
   - Destination
+
+categorical_columns_ordinal:
   - Total_Stops
 
 target_column: Price

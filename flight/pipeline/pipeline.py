@@ -1,6 +1,7 @@
 from collections import namedtuple
 from datetime import datetime
 import uuid
+from flight.component.data_transformation import DataTransformation
 from flight.config.configuration import Configuration
 from flight.logger import logging, get_log_file_name
 from flight.exception import FlightException
@@ -61,8 +62,18 @@ class Pipeline():
         except Exception as e:
             raise FlightException(e,sys) from e
 
-    def start_data_transformation(self):
-        pass
+    def start_data_transformation(self,data_ingestion_artifact : DataIngestionArtifact,\
+        data_validation_artifact : DataValidationArtifact)->DataTransformationArtifact:
+        try:
+            data_transformation = DataTransformation(
+                data_transformation_config=self.config.get_data_transformation_config(),
+                data_ingestion_artifact=data_ingestion_artifact,
+                data_validation_artifact=data_validation_artifact)
+            
+            return data_transformation.initiate_data_transformation()
+        
+        except Exception as e:
+            raise FlightException(e,sys) from e
 
     def start_model_trainer(self):
         pass
@@ -75,13 +86,18 @@ class Pipeline():
 
     def run_pipeline(self):
         try:
-            #data ingestion
+            # data ingestion
             data_ingestion_artifact = self.start_data_ingestion()
-            #data validation
+            # data validation
             data_validation_artifact = self.start_data_validation(
                 data_ingestion_artifact=data_ingestion_artifact)
-            print(data_validation_artifact)
-
+            # data transformation
+            data_transformation_artifact = self.start_data_transformation(
+                data_ingestion_artifact=data_ingestion_artifact,
+                data_validation_artifact=data_validation_artifact
+            )
+            print(data_transformation_artifact)
+            
         except Exception as e:
             raise FlightException(e,sys) from e
 

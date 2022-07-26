@@ -1,4 +1,5 @@
 import yaml
+import json
 from flight.exception import FlightException
 from flight.logger import logging
 import os,sys
@@ -34,6 +35,16 @@ def read_yaml_file(file_path:str)->dict:
     except Exception as e:
         raise FlightException(e,sys) from e
 
+def save_json_file(file_path:str,file:json):
+    try:
+        file_dir = os.path.dirname(file_path)
+        os.makedirs(file_dir,exist_ok=True)
+        # Save the file in file_path
+        with open(file_path, "w") as json_file:
+            json.dump(file,json_file,indent=6)
+        logging.info(f"{file} saved at {file_path}")
+    except Exception as e:
+        raise FlightException(e,sys) from e
 
 def save_numpy_array_data(file_path: str, array: np.array):
     """

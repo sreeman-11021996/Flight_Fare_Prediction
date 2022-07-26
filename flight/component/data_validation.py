@@ -9,7 +9,10 @@ import os,sys
 from flight.entity.artifact_entity import DataIngestionArtifact,\
     DataValidationArtifact
 from flight.util.util import read_yaml_file,save_json_file,load_data
+
 import pandas as pd
+import numpy as np
+
 from evidently.model_profile import Profile
 from evidently.model_profile.sections import DataDriftProfileSection
 from evidently.dashboard import Dashboard
@@ -99,9 +102,8 @@ class DataValidation:
             for column,category_list in self.schema[SCHEMA_DOMAIN_VALUE_KEY]. \
                 items():
                 for category in self.train_df[column].unique():
-                    if category not in category_list:
-                        message = f"[{column}] column does not accept <{category}>"
-                        "in schema"
+                    if category not in category_list and category is not np.nan:
+                        message = f"[{column}] column does not accept <{category}> in schema"
                         raise Exception(message)
             validate_domain_values = True
             
