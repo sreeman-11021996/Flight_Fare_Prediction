@@ -191,8 +191,7 @@ class DataValidation:
             dashboard = Dashboard(tabs=[DataDriftTab()])
             dashboard.calculate(self.train_df,self.test_df)
             
-            report_page_file_path = \
-                self.data_validation_config.report_page_file_path
+            report_page_file_path = self.data_validation_config.report_page_file_path
             report_page_file_dir = os.path.dirname(report_page_file_path)
             os.makedirs(report_page_file_dir,exist_ok=True)
             
@@ -208,7 +207,6 @@ class DataValidation:
         try:
             validated_data_drift = False
             report = self.get_and_save_data_drift_report_file()
-            #print(report["data_drift"]["data"]["metrics"]["dataset_drift"])
             if report[DATA_DRIFT_DATA_DRIFT_KEY][DATA_DRIFT_DATA_KEY][
                 DATA_DRIFT_METRICS_KEY][DATA_DRIFT_DATASET_DRIFT_KEY]:
                 message = f"Data Drift is found in Dataset"

@@ -29,15 +29,15 @@ from flight.util.util import read_yaml_file,save_object,save_numpy_array_data,lo
 
 class FeatureSplitter(BaseEstimator, TransformerMixin):
     
-    def __init__ (self,date_columns : list =[0], time_columns : list = [2,3],
+    def __init__ (self,date_columns : list =[0], time_columns : list = [1,2],
                  sep = "_"):
         """
         date_columns - 
         Date_of_Journey idx = 0
 
         time_columns - 
-        Dep_Time idx = 2
-        Arrival_Time idx = 3
+        Dep_Time idx = 1
+        Arrival_Time idx = 2
 
         """
         try:
@@ -65,8 +65,8 @@ class FeatureSplitter(BaseEstimator, TransformerMixin):
             # time_columns splitting
             for col in self.time_columns:
                 feat_hour = pd.to_datetime(X[:,col]).hour
-                feat_mimute = pd.to_datetime(X[:,col]).minute
-                X = np.c_[X,feat_hour,feat_mimute]
+                feat_minute = pd.to_datetime(X[:,col]).minute
+                X = np.c_[X,feat_hour,feat_minute]
 
             # delete the redundant columns
             idx_shift = 0
@@ -80,7 +80,7 @@ class FeatureSplitter(BaseEstimator, TransformerMixin):
         
 class FeatureCalculator(BaseEstimator, TransformerMixin):
     
-    def __init__ (self,feat_calculate_idx = [2]):
+    def __init__ (self,feat_calculate_idx = [0]):
         """
         feat_delete_idx - 
         Route idx = 0
@@ -91,7 +91,6 @@ class FeatureCalculator(BaseEstimator, TransformerMixin):
         """
         try:
             self.feat_calculate_idx : list = feat_calculate_idx
-            self.feat_delete_idx : list = feat_delete_idx
 
         except Exception as e:
             raise FlightException(e,sys) from e 
@@ -114,10 +113,23 @@ class FeatureCalculator(BaseEstimator, TransformerMixin):
 
             # calculate the feature value
             for col in self.feat_calculate_idx:
-                # we are converting duration to
-                feat_minutes = pd.Series(X[:,col-idx_shift]).str.replace("h", '*60').\
-                str.replace(' ','+').str.replace('m','*1').apply(eval).to_numpy()
-                X = np.c_[X,feat_minutes]
+                feat = list(X[:,col-idx_shift])
+                # Check if feat contains only hour or mins
+                for i in range(len(feat)):
+                    if len(feat[i].split()) != 2:    
+                        if "h" in feat[i]:
+                            feat[i] = feat[i].strip() + " 0m"   # Adds 0 minute
+                        else:
+                            feat[i] = "0h " + feat[i]   # Adds 0 hour
+
+                feat_hours = []
+                feat_minutes = []
+                    
+                # Extract hours & minutes
+                for i in range(len(feat)):
+                    feat_hours.append(int(feat[i].split(sep = "h")[0]))    
+                    feat_minutes.append(int(feat[i].split(sep = "m")[0].split()[-1]))    
+                X = np.c_[X,feat_hours,feat_minutes]
                 # delete the redundant column
                 X = np.delete(X,col-idx_shift,axis=1)
                 idx_shift += 1
