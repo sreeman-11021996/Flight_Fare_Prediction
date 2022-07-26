@@ -4,20 +4,20 @@ import uuid
 from flight.config.configuration import Configuration
 from flight.logger import logging, get_log_file_name
 from flight.exception import FlightException
-from threading import Thread
+#from threading import Thread
 from typing import List
 
-from multiprocessing import Process
+#from multiprocessing import Process
 from flight.entity.artifact_entity import ModelPusherArtifact, DataIngestionArtifact, \
     ModelEvaluationArtifact,DataValidationArtifact, DataTransformationArtifact, ModelTrainerArtifact
 from flight.entity.config_entity import DataIngestionConfig, ModelEvaluationConfig
 
 from flight.component.data_ingestion import DataIngestion
-from flight.component.data_validation import DataValidation
-from flight.component.data_transformation import DataTransformation
-from flight.component.model_trainer import ModelTrainer
-from flight.component.model_evaluation import ModelEvaluation
-from flight.component.model_pusher import ModelPusher
+#from flight.component.data_validation import DataValidation
+#from flight.component.data_transformation import DataTransformation
+#from flight.component.model_trainer import ModelTrainer
+#from flight.component.model_evaluation import ModelEvaluation
+#from flight.component.model_pusher import ModelPusher
 
 import os, sys
 from collections import namedtuple
@@ -29,7 +29,7 @@ Experiment = namedtuple("Experiment", ["experiment_id", "initialization_timestam
     "running_status", "start_time", "stop_time", "execution_time", "message","experiment_file_path", 
     "accuracy", "is_model_accepted"])
 
-class Pipeline(Thread):
+class Pipeline():
     
     def __init__(self,config: Configuration = Configuration()) -> None:
         try:
@@ -49,7 +49,7 @@ class Pipeline(Thread):
             raise FlightException(e,sys) from e    
 
 
-    def start_data_validation(self,data_ingestion_artifact:DataIngestionArtifact)\
+    """def start_data_validation(self,data_ingestion_artifact:DataIngestionArtifact)\
         ->DataValidationArtifact:
         try:
             data_validation = DataValidation(
@@ -59,7 +59,7 @@ class Pipeline(Thread):
             return data_validation.initiate_data_validation()
         
         except Exception as e:
-            raise FlightException(e,sys) from e
+            raise FlightException(e,sys) from e"""
 
     def start_data_transformation(self):
         pass
@@ -77,9 +77,10 @@ class Pipeline(Thread):
         try:
             #data ingestion
             data_ingestion_artifact = self.start_data_ingestion()
+            print(data_ingestion_artifact)
             #data validation
-            data_validation_artifact = self.start_data_validation(
-                data_ingestion_artifact=data_ingestion_artifact)
+            """data_validation_artifact = self.start_data_validation(
+                data_ingestion_artifact=data_ingestion_artifact)"""
             #print(data_validation_artifact)
 
         except Exception as e:

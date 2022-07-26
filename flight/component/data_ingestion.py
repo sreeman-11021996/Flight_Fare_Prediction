@@ -3,9 +3,9 @@ import sys,os
 from flight.exception import FlightException
 from flight.logger import logging
 from flight.entity.artifact_entity import DataIngestionArtifact
-import tarfile  # to download url
+import tarfile  # to extract tdz file
 import numpy as np
-#from six.moves import urllib    # to extract tdz file
+#from six.moves import urllib    # to download url
 from urllib import request # to extract tdz file
 import pandas as pd
 from sklearn.model_selection import StratifiedShuffleSplit
@@ -43,11 +43,9 @@ class DataIngestion:
             tgz_file_path = os.path.join(tgz_download_dir, housing_file_name)
             
             # extract data into the file path
-            logging.info(f"Downloading file from :[{download_url}] into "
-                         ":[{tgz_file_path}]")
+            logging.info(f"Downloading file from :[{download_url}] into :[{tgz_file_path}]")
             request.urlretrieve(download_url, tgz_file_path)
-            logging.info(f"File :[{tgz_file_path}] has been downloaded "
-                         "successfully.")
+            logging.info(f"File :[{tgz_file_path}] has been downloaded successfully.")
             return tgz_file_path
         
         except Exception as e:
@@ -67,8 +65,7 @@ class DataIngestion:
             os.makedirs(raw_data_dir,exist_ok=True)
             
             # Extract the raw_data from tdz_data
-            logging.info(f"Extracting tgz file: [{tgz_file_path}] into dir: "
-                         "[{raw_data_dir}]")
+            logging.info(f"Extracting tgz file: [{tgz_file_path}] into dir: [{raw_data_dir}]")
             with tarfile.open(tgz_file_path) as housing_tgz_file_obj:
                 housing_tgz_file_obj.extractall(path=raw_data_dir)
             logging.info(f"Extraction completed")
