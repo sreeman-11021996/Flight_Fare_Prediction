@@ -30,10 +30,12 @@ Experiment = namedtuple("Experiment", ["experiment_id", "initialization_timestam
     "running_status", "start_time", "stop_time", "execution_time", "message","experiment_file_path", 
     "accuracy", "is_model_accepted"])
 
-class Pipeline():
+class Pipeline(Thread):
     
     def __init__(self,config: Configuration = Configuration()) -> None:
         try:
+            
+            super().__init__(daemon=False, name="pipeline")
             self.config=config
 
         except Exception as e:
@@ -72,6 +74,12 @@ class Pipeline():
             
             return data_transformation.initiate_data_transformation()
         
+        except Exception as e:
+            raise FlightException(e,sys) from e
+        
+    def run(self):
+        try:
+            self.run_pipeline()
         except Exception as e:
             raise FlightException(e,sys) from e
 

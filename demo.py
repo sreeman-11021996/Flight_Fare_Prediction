@@ -9,7 +9,7 @@ def main():
         config_path = os.path.join("config","config.yaml")
         pipeline = Pipeline(Configuration(config_file_path=config_path))
         #pipeline.run_pipeline()
-        pipeline.run_pipeline()
+        pipeline.start()
         logging.info("main function execution completed.")
         # # data_validation_config = Configuartion().get_data_transformation_config()
         # # print(data_validation_config)
