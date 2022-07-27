@@ -15,8 +15,8 @@ from flight.entity.config_entity import DataIngestionConfig, ModelEvaluationConf
 
 from flight.component.data_ingestion import DataIngestion
 from flight.component.data_validation import DataValidation
-#from flight.component.data_transformation import DataTransformation
-#from flight.component.model_trainer import ModelTrainer
+from flight.component.data_transformation import DataTransformation
+from flight.component.model_trainer import ModelTrainer
 #from flight.component.model_evaluation import ModelEvaluation
 #from flight.component.model_pusher import ModelPusher
 
@@ -77,20 +77,28 @@ class Pipeline(Thread):
         except Exception as e:
             raise FlightException(e,sys) from e
         
-    def run(self):
+    def start_model_trainer(self,data_transformation_artifact:DataTransformationArtifact)\
+        ->ModelTrainerArtifact:
         try:
-            self.run_pipeline()
+            model_trainer = ModelTrainer(model_trainer_config=self.config.get_model_trainer_config(),\
+                data_transformation_artifact=data_transformation_artifact)
+            
+            return model_trainer.initiate_model_trainer()
+        
         except Exception as e:
             raise FlightException(e,sys) from e
-
-    def start_model_trainer(self):
-        pass
-
+        
     def start_model_evaluation(self):
         pass
 
     def start_model_pusher(self):
         pass
+        
+    def run(self):
+        try:
+            self.run_pipeline()
+        except Exception as e:
+            raise FlightException(e,sys) from e
 
     def run_pipeline(self):
         try:
@@ -104,7 +112,10 @@ class Pipeline(Thread):
                 data_ingestion_artifact=data_ingestion_artifact,
                 data_validation_artifact=data_validation_artifact
             )
-            print(data_transformation_artifact)
+            # model trainer
+            model_trainer_artifact = self.start_model_trainer(
+                data_transformation_artifact=data_transformation_artifact)
+            print(model_trainer_artifact)
             
         except Exception as e:
             raise FlightException(e,sys) from e

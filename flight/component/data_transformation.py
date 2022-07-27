@@ -54,7 +54,8 @@ class FeatureSplitter(BaseEstimator, TransformerMixin):
     def transform(self,X, y=None):
         try:
             # convert any dataframe to numpy array
-            X = X.to_numpy()
+            if type(X) is not np.ndarray:
+                X = X.to_numpy()
 
             # date_columns spliting
             for col in self.date_columns:
@@ -187,7 +188,7 @@ class DataTransformation:
             )
                         
             logging.info(f"Categorical Nominal columns: {categorical_nominal_columns}")
-            logging.info(f"Categorical Nominal columns: {categorical_ordinal_columns}")
+            logging.info(f"Categorical Ordinal columns: {categorical_ordinal_columns}")
             logging.info(f"Numerical columns: {numerical_columns}")
 
 

@@ -95,7 +95,7 @@ class ModelTrainer():
             
             logging.info(f"Evaluation all trained model on training and testing dataset both")
             metric_info:MetricInfoArtifact = evaluate_regression_model(model_list=model_list,X_train=X_train,\
-                y_train=y_train,X_test=X_test,y_test=y_test,base_accuracy=base_accuracy)
+                y_train=y_train,X_test=X_test,y_test=y_test,base_accuracy=base_accuracy,tol=0.25)
             logging.info(f"Best found model on both training and testing dataset.")
         
             # get the objects for preprocessing & training model
