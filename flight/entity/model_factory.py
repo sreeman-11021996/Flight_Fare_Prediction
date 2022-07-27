@@ -33,7 +33,7 @@ def evaluate_classification_model(model_list: list, X_train:np.ndarray,
 
 def evaluate_regression_model(model_list: list, X_train:np.ndarray, 
     y_train:np.ndarray, X_test:np.ndarray, y_test:np.ndarray, 
-    base_accuracy:float=0.6) -> MetricInfoArtifact:
+    base_accuracy:float=0.6,tol=0.05) -> MetricInfoArtifact:
     """
     Description:
     This function compare multiple regression model return best model
@@ -90,7 +90,7 @@ def evaluate_regression_model(model_list: list, X_train:np.ndarray,
             #if model accuracy is greater than base accuracy and train and test 
             # score is within certain thershold
             # we will accept that model as accepted model
-            if model_accuracy >= base_accuracy and diff_test_train_acc < 0.05:
+            if model_accuracy >= base_accuracy and diff_test_train_acc < tol:
                 base_accuracy = model_accuracy
                 metric_info_artifact = MetricInfoArtifact(
                     model_name=model_name,
@@ -268,6 +268,7 @@ class ModelFactory:
         ================================================================================
         return: Function will return GridSearchOperation object
         """
+
         try:
             # instantiating GridSearchCV class
             
@@ -320,6 +321,7 @@ class ModelFactory:
         ==========================================================================
         return: Function will return a GridSearchOperation
         """
+        
         try:
             return self.execute_grid_search_operation(
                 initialized_model=initialized_model,input_feature=input_feature,
@@ -351,6 +353,7 @@ class ModelFactory:
         """
         This function return ModelDetail
         """
+        
         try:
             for model_data in model_details:
                 if model_data.model_serial_number == model_serial_number:
