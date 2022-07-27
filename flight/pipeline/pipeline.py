@@ -1,7 +1,9 @@
 from collections import namedtuple
 from datetime import datetime
+from tkinter import EXCEPTION
 import uuid
 from flight.component.data_transformation import DataTransformation
+from flight.component.model_pusher import ModelPusher
 from flight.config.configuration import Configuration
 from flight.logger import logging, get_log_file_name
 from flight.exception import FlightException
@@ -18,7 +20,7 @@ from flight.component.data_validation import DataValidation
 from flight.component.data_transformation import DataTransformation
 from flight.component.model_trainer import ModelTrainer
 from flight.component.model_evaluation import ModelEvaluation
-#from flight.component.model_pusher import ModelPusher
+from flight.component.model_pusher import ModelPusher
 
 import os, sys
 from collections import namedtuple
@@ -31,10 +33,14 @@ Experiment = namedtuple("Experiment", ["experiment_id", "initialization_timestam
     "accuracy", "is_model_accepted"])
 
 class Pipeline(Thread):
+    experiment : Experiment = Experiment(*([None]*11))
+    experiment_file_path = None
     
     def __init__(self,config: Configuration = Configuration()) -> None:
         try:
-            
+            os.makedirs(config.training_pipeline_config.artifact_dir,exist_ok=True)
+            Pipeline.experiment_file_path = os.path.join(config.training_pipeline_config.artifact_dir,EXPERIMENT_DIR_NAME,\
+                EXPERIMENT_FILE_NAME)
             super().__init__(daemon=False, name="pipeline")
             self.config=config
 
@@ -103,17 +109,43 @@ class Pipeline(Thread):
         except Exception as e:
             raise FlightException(e,sys) from e
 
-    def start_model_pusher(self):
-        pass
-        
-    def run(self):
+    def start_model_pusher(self,model_evaluation_artifact:ModelEvaluationArtifact)->ModelPusherArtifact:
         try:
-            self.run_pipeline()
+            model_pusher = ModelPusher(model_pusher_config=self.config.get_model_pusher_config(),\
+                model_evaluation_artifact=model_evaluation_artifact)
+            
+            return model_pusher.initiate_model_pusher()
         except Exception as e:
             raise FlightException(e,sys) from e
+        
 
     def run_pipeline(self):
         try:
+            if Pipeline.experiment.running_status:
+                logging.info("Pipeline is already running")
+                return Pipeline.experiment
+            # data ingestion
+            logging.info("Pipeline starting.")
+
+            experiment_id = str(uuid.uuid4())
+            start = datetime.now()
+            
+            Pipeline.experiment = Experiment(
+                experiment_id=experiment_id,
+                initialization_timestamp=self.config.time_stamp,
+                artifact_time_stamp=self.config.time_stamp,
+                running_status=True,
+                start_time=start,
+                stop_time=None,
+                execution_time=None,
+                message="Pipeline has been started.",
+                experiment_file_path=Pipeline.experiment_file_path,
+                accuracy=None,
+                is_model_accepted=None)
+            
+            logging.info(f"Pipeline experiment: {Pipeline.experiment}")
+            self.save_experiment()
+            
             # data ingestion
             data_ingestion_artifact = self.start_data_ingestion()
             # data validation
@@ -133,8 +165,45 @@ class Pipeline(Thread):
                 data_ingestion_artifact=data_ingestion_artifact,
                 data_validation_artifact=data_validation_artifact
             )
+            # model pusher
+            if model_evaluation_artifact.is_model_accepted:
+                model_pusher_artifact = self.start_model_pusher(
+                    model_evaluation_artifact=model_evaluation_artifact)
+                logging.info(f'Model pusher artifact: {model_pusher_artifact}')
+            else:
+                logging.info("Trained model rejected.")
+            logging.info("Pipeline completed.")
             
+            stop = datetime.now()
             
+            Pipeline.experiment = Experiment(
+                experiment_id=experiment_id,
+                initialization_timestamp=self.config.time_stamp,
+                artifact_time_stamp=self.config.time_stamp,
+                running_status=False,
+                start_time=start,
+                stop_time=stop,
+                execution_time=start-stop,
+                message="Pipeline has finished",
+                experiment_file_path=Pipeline.experiment_file_path,
+                accuracy=model_trainer_artifact.model_accuracy,
+                is_model_accepted=model_evaluation_artifact.is_model_accepted)
+            
+            logging.info(f"Pipeline experiment: {Pipeline.experiment}")
+            self.save_experiment()
+            
+        except Exception as e:
+            raise FlightException(e,sys) from e
+        
+    def run(self):
+        try:
+            self.run_pipeline()
+        except Exception as e:
+            raise FlightException(e,sys) from e
+        
+    def save_experiment(self):
+        try:
+            pass
         except Exception as e:
             raise FlightException(e,sys) from e
 

@@ -17,6 +17,7 @@ class ModelEvaluation:
         model_trainer_artifact:ModelTrainerArtifact,data_ingestion_artifact:DataIngestionArtifact,
         data_validation_artifact:DataValidationArtifact):
         try:
+            logging.info(f"{'>>' * 30}Model Evaluation log started.{'<<' * 30} ")
             self.model_evaluation_config = model_evaluation_config
             self.model_trainer_artifact = model_trainer_artifact
             self.data_ingestion_artifact = data_ingestion_artifact
@@ -88,9 +89,8 @@ class ModelEvaluation:
             
             # get best model in production
             prod_model_file_path = self.get_best_model_eval_file_path()
-            prod_model_object = load_object(file_path=prod_model_file_path)
             
-            if prod_model_object is None:
+            if prod_model_file_path is None:
                 logging.info("Not found any existing model. Hence accepting trained model")
                 model_evaluation_artifact = ModelEvaluationArtifact(is_model_accepted=True, \
                     evaluated_model_path=trained_model_file_path
@@ -99,6 +99,7 @@ class ModelEvaluation:
                 logging.info(f"Model accepted. Model eval artifact {model_evaluation_artifact} created")
                 return model_evaluation_artifact
             
+            prod_model_object = load_object(file_path=prod_model_file_path)
             model_list = [trained_model_object,prod_model_object]
             
             # get train & test data (X,y)
@@ -126,8 +127,8 @@ class ModelEvaluation:
             logging.info(f"Dropping target column from the dataframe completed.")
             
             # compare the models:
-            metric_info:MetricInfoArtifact = evaluate_regression_model(X_train=train_df,\
-                y_train=target_train_arr,X_test=test_df,y_test=target_test_arr,
+            metric_info:MetricInfoArtifact = evaluate_regression_model(model_list=model_list,\
+                X_train=train_df,y_train=target_train_arr,X_test=test_df,y_test=target_test_arr,
                 base_accuracy=self.model_trainer_artifact.model_accuracy,tol=0.25)
             logging.info(f"Model evaluation completed. model metric artifact: {metric_info}")
             
@@ -139,11 +140,12 @@ class ModelEvaluation:
                 logging.info(response)
                 return response
 
-            if metric_info.index_number == 1:
+            if metric_info.index_number == 0:
                 model_evaluation_artifact = ModelEvaluationArtifact(is_model_accepted=True,\
                     evaluated_model_path=trained_model_file_path
                     )
                 self.update_evaluation_report(model_evaluation_artifact)
+                print("Model Accuracy - " , metric_info.model_accuracy)
                 logging.info(f"Model accepted. Model eval artifact {model_evaluation_artifact} created")
 
             else:

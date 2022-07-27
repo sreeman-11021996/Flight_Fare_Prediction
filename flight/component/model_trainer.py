@@ -33,7 +33,6 @@ class FlightEstimatorModel():
         """
         
         try:
-            X = np.array(X)
             
             transformed_feature = self.preprocessing_object.transform(X)
             return self.trained_model_object.predict(transformed_feature)

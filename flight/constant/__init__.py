@@ -125,7 +125,5 @@ MODEL_SELECTION_KEY = 'model_selection'
 SEARCH_PARAM_GRID_KEY = "search_param_grid"
 
 # Experiment
-
-
 EXPERIMENT_DIR_NAME="experiment"
 EXPERIMENT_FILE_NAME="experiment.csv"
