@@ -112,7 +112,6 @@ class Pipeline(Thread):
             
             # Pipeline Started
             Pipeline.experiment.pipeline_started(time_stamp=self.config.time_stamp)
-            print("Experiment dataframe - \n",Pipeline.experiment.get_experiment_status())
             # ----------------------------------------------------------------------
             # 1. data ingestion
             data_ingestion_artifact = self.start_data_ingestion()
@@ -144,7 +143,6 @@ class Pipeline(Thread):
             # Pipeline completed
             Pipeline.experiment.pipeline_ended(model_accuracy=model_trainer_artifact.model_accuracy,\
                 is_model_accepted=model_evaluation_artifact.is_model_accepted)
-            print("Experiment dataframe - \n",Pipeline.experiment.get_experiment_status())
             
         except Exception as e:
             raise FlightException(e,sys) from e
