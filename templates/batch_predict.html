@@ -10,21 +10,26 @@
 
 <div class="row">
     <div class="col-md-6 col-sm-12 col-xs-6 col-lg-6">
-        <form action="/predict" method="post">
+        <form action="/batch_predict" method="post" enctype="multipart/form-data">
             <legend>Flight Fare Estimation Form</legend>
             <div class="mb-3">
                 <label class="form-label">Upload File</label>
-                <input class="form-control" type="file" name="Upload File" placeholder="Upload your Test file"
+                <input class="form-control" type="file" name="file" placeholder="Upload your Test file"
                     required />
 
             </div>
             <div class="mb-3">
-
-                <input class="btn btn-primary" type="submit" value="Predict Flight Fare" required />
+                <input class="btn btn-primary" type="submit" value="Batch Predict Flight Fare" required />
             </div>
+
         </form>
     </div>
+
+    <div>
+        
+    </div>
 </div>
+
 
 
 </div>
