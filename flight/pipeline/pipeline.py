@@ -14,6 +14,7 @@ from multiprocessing import Process
 from flight.entity.artifact_entity import ModelPusherArtifact, DataIngestionArtifact, \
     ModelEvaluationArtifact,DataValidationArtifact, DataTransformationArtifact, ModelTrainerArtifact
 from flight.entity.config_entity import DataIngestionConfig, ModelEvaluationConfig
+from entity.experiment import Experiment_class
 
 from flight.component.data_ingestion import DataIngestion
 from flight.component.data_validation import DataValidation
@@ -28,19 +29,13 @@ from datetime import datetime
 import pandas as pd
 from flight.constant import EXPERIMENT_DIR_NAME, EXPERIMENT_FILE_NAME
 
-Experiment = namedtuple("Experiment", ["experiment_id", "initialization_timestamp","artifact_time_stamp",
-    "running_status", "start_time", "stop_time", "execution_time", "message","experiment_file_path", 
-    "accuracy", "is_model_accepted"])
 
 class Pipeline(Thread):
-    experiment : Experiment = Experiment(*([None]*11))
-    experiment_file_path = None
+    experiment : Experiment_class = Experiment_class(*([None]*11))
     
     def __init__(self,config: Configuration = Configuration()) -> None:
         try:
-            os.makedirs(config.training_pipeline_config.artifact_dir,exist_ok=True)
-            Pipeline.experiment_file_path = os.path.join(config.training_pipeline_config.artifact_dir,EXPERIMENT_DIR_NAME,\
-                EXPERIMENT_FILE_NAME)
+            Pipeline.experiment.set_experiment_path(artifact_dir=config.training_pipeline_config.artifact_dir)
             super().__init__(daemon=False, name="pipeline")
             self.config=config
 
@@ -121,76 +116,42 @@ class Pipeline(Thread):
 
     def run_pipeline(self):
         try:
-            if Pipeline.experiment.running_status:
-                logging.info("Pipeline is already running")
-                return Pipeline.experiment
-            # data ingestion
-            logging.info("Pipeline starting.")
-
-            experiment_id = str(uuid.uuid4())
-            start = datetime.now()
+            if Pipeline.experiment.check_pipeline_status():
+                return Pipeline.experiment.experiment
             
-            Pipeline.experiment = Experiment(
-                experiment_id=experiment_id,
-                initialization_timestamp=self.config.time_stamp,
-                artifact_time_stamp=self.config.time_stamp,
-                running_status=True,
-                start_time=start,
-                stop_time=None,
-                execution_time=None,
-                message="Pipeline has been started.",
-                experiment_file_path=Pipeline.experiment_file_path,
-                accuracy=None,
-                is_model_accepted=None)
-            
-            logging.info(f"Pipeline experiment: {Pipeline.experiment}")
-            self.save_experiment()
-            
-            # data ingestion
+            # Pipeline Started
+            Pipeline.experiment.pipeline_started(time_stamp=self.config.time_stamp)
+            # ----------------------------------------------------------------------
+            # 1. data ingestion
             data_ingestion_artifact = self.start_data_ingestion()
-            # data validation
+            # 2. data validation
             data_validation_artifact = self.start_data_validation(
                 data_ingestion_artifact=data_ingestion_artifact)
-            # data transformation
+            # 3. data transformation
             data_transformation_artifact = self.start_data_transformation(
                 data_ingestion_artifact=data_ingestion_artifact,
                 data_validation_artifact=data_validation_artifact
             )
-            # model trainer
+            # 4. model trainer
             model_trainer_artifact = self.start_model_trainer(
                 data_transformation_artifact=data_transformation_artifact)
-            # model evaluation
+            # 5. model evaluation
             model_evaluation_artifact = self.start_model_evaluation(
                 model_trainer_artifact=model_trainer_artifact,
                 data_ingestion_artifact=data_ingestion_artifact,
                 data_validation_artifact=data_validation_artifact
             )
-            # model pusher
+            # 6. model pusher
             if model_evaluation_artifact.is_model_accepted:
                 model_pusher_artifact = self.start_model_pusher(
                     model_evaluation_artifact=model_evaluation_artifact)
                 logging.info(f'Model pusher artifact: {model_pusher_artifact}')
             else:
                 logging.info("Trained model rejected.")
-            logging.info("Pipeline completed.")
-            
-            stop = datetime.now()
-            
-            Pipeline.experiment = Experiment(
-                experiment_id=experiment_id,
-                initialization_timestamp=self.config.time_stamp,
-                artifact_time_stamp=self.config.time_stamp,
-                running_status=False,
-                start_time=start,
-                stop_time=stop,
-                execution_time=start-stop,
-                message="Pipeline has finished",
-                experiment_file_path=Pipeline.experiment_file_path,
-                accuracy=model_trainer_artifact.model_accuracy,
+            # ----------------------------------------------------------------------
+            # Pipeline completed
+            Pipeline.experiment.pipeline_ended(model_accuracy=model_trainer_artifact.model_accuracy,\
                 is_model_accepted=model_evaluation_artifact.is_model_accepted)
-            
-            logging.info(f"Pipeline experiment: {Pipeline.experiment}")
-            self.save_experiment()
             
         except Exception as e:
             raise FlightException(e,sys) from e
@@ -201,9 +162,5 @@ class Pipeline(Thread):
         except Exception as e:
             raise FlightException(e,sys) from e
         
-    def save_experiment(self):
-        try:
-            pass
-        except Exception as e:
-            raise FlightException(e,sys) from e
+    
 
