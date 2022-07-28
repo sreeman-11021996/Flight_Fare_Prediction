@@ -127,3 +127,13 @@ SEARCH_PARAM_GRID_KEY = "search_param_grid"
 # Experiment
 EXPERIMENT_DIR_NAME="experiment"
 EXPERIMENT_FILE_NAME="experiment.csv"
+
+# Flight Predictor
+DATE_OF_JOURNEY_KEY = "Date_of_Journey"
+DEP_TIME_KEY = "Dep_Time"
+ARRIVAL_TIME_KEY = "Arrival_Time"
+DURATION_KEY = "Duration"
+AIRLINE_KEY = "Airline"
+SOURCE_KEY = "Source"
+DESTINATION_KEY = "Destination"
+TOTAL_STOPS_KEY = "Total_Stops"

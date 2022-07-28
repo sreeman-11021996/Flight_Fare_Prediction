@@ -1,20 +1,14 @@
-from collections import namedtuple
-from datetime import datetime
-from tkinter import EXCEPTION
-import uuid
 from flight.component.data_transformation import DataTransformation
 from flight.component.model_pusher import ModelPusher
 from flight.config.configuration import Configuration
-from flight.logger import logging, get_log_file_name
+from flight.logger import logging
 from flight.exception import FlightException
 from threading import Thread
-from typing import List
 
-from multiprocessing import Process
+# from multiprocessing import Process
 from flight.entity.artifact_entity import ModelPusherArtifact, DataIngestionArtifact, \
     ModelEvaluationArtifact,DataValidationArtifact, DataTransformationArtifact, ModelTrainerArtifact
-from flight.entity.config_entity import DataIngestionConfig, ModelEvaluationConfig
-from entity.experiment import Experiment_class
+from flight.entity.experiment import Experiment_class
 
 from flight.component.data_ingestion import DataIngestion
 from flight.component.data_validation import DataValidation
@@ -23,10 +17,7 @@ from flight.component.model_trainer import ModelTrainer
 from flight.component.model_evaluation import ModelEvaluation
 from flight.component.model_pusher import ModelPusher
 
-import os, sys
-from collections import namedtuple
-from datetime import datetime
-import pandas as pd
+import sys
 from flight.constant import EXPERIMENT_DIR_NAME, EXPERIMENT_FILE_NAME
 
 
@@ -121,6 +112,7 @@ class Pipeline(Thread):
             
             # Pipeline Started
             Pipeline.experiment.pipeline_started(time_stamp=self.config.time_stamp)
+            print("Experiment dataframe - \n",Pipeline.experiment.get_experiment_status())
             # ----------------------------------------------------------------------
             # 1. data ingestion
             data_ingestion_artifact = self.start_data_ingestion()
@@ -152,6 +144,7 @@ class Pipeline(Thread):
             # Pipeline completed
             Pipeline.experiment.pipeline_ended(model_accuracy=model_trainer_artifact.model_accuracy,\
                 is_model_accepted=model_evaluation_artifact.is_model_accepted)
+            print("Experiment dataframe - \n",Pipeline.experiment.get_experiment_status())
             
         except Exception as e:
             raise FlightException(e,sys) from e

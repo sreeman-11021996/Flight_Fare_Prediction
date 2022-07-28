@@ -81,7 +81,8 @@ class Experiment_class:
                 
                 experiment_report = pd.DataFrame.from_dict(experiment_dict)
                 
-                os.makedirs(self.experiment_file_path,exist_ok=True)
+                experiment_dir = os.path.dirname(self.experiment_file_path)
+                os.makedirs(experiment_dir,exist_ok=True)
                 # to write or append to experiment.csv
                 if os.path.exists(self.experiment_file_path):
                     experiment_report.to_csv(self.experiment_file_path,index=False,header=False,mode="a")
@@ -127,8 +128,8 @@ class Experiment_class:
         try:
             if os.path.exists(self.experiment_file_path):
                 experiment_df = pd.read_csv(self.experiment_file_path)
-                limit = -1 * int(limit)
-                return experiment_df[limit:].drop(columns=["experiment_file_path", "initialization_timestamp"], axis=1)
+                limit = int(limit)
+                return experiment_df.tail(limit).drop(columns=["experiment_file_path", "initialization_timestamp"], axis=1)
             else:
                 return pd.DataFrame()
         except Exception as e:
