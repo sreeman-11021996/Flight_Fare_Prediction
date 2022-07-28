@@ -64,9 +64,6 @@ table-layout: fixed;
                         <a class="nav-link active" aria-current="page" href="/">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if 'saved_models' in request.path %} active {% endif %}" href="/saved_models">View Trained Model</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link {% if 'predict' in request.path %} active {% endif %}" href="/predict">Estimate Flight Fare</a>
                     </li>
                     <li class="nav-item">
@@ -84,9 +81,6 @@ table-layout: fixed;
        
         <div class="col-md-2 col-sm-12 col-lg-2">
             <ul class=" list-group ">
-                <li class="list-group-item py-1 {% if 'saved_models' in request.path %} active {% endif %}">
-                    <a style=" text-decoration: none;color:black" href="/saved_models">View Trained Model</a>
-                </li>
                 <li class="list-group-item py-1 {% if 'predict' in request.path %} active {% endif %}">
                     <a style=" text-decoration: none;color:black" href="/predict">Estimate Flight Fare</a>
                 </li>
