@@ -69,6 +69,9 @@ table-layout: fixed;
                     <li class="nav-item">
                         <a class="nav-link {% if 'predict' in request.path %} active {% endif %}" href="/view_experiment_hist">Experiment History</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'batch_predict' in request.path %} active {% endif %}" href="/batch_predict">Batch Estimate Flight Fare</a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -86,6 +89,9 @@ table-layout: fixed;
                 </li>
                 <li class="list-group-item py-1 {% if 'train' in request.path %} active {% endif %}">
                     <a style=" text-decoration: none;color:black" href="/train">Train Flight Fare Estimator</a>
+                </li>
+                <li class="list-group-item py-1 {% if 'batch_predict' in request.path %} active {% endif %}">
+                    <a style=" text-decoration: none;color:black" href="/batch_predict">Batch Estimate Flight Fare</a>
                 </li>
                 
 

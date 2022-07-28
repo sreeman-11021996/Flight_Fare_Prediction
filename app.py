@@ -70,17 +70,16 @@ def predict():
         FLIGHT_DATA_KEY: None,
         FLIGHT_PRICE_KEY: None
     }
-
     if request.method == 'POST':
-        Airline = float(request.form['Airline'])
-        Date_of_Journey = float(request.form['Date_of_Journey'])
-        Source = float(request.form['Source'])
-        Destination = float(request.form['Destination'])
-        Dep_Time = float(request.form['Dep_Time'])
-        Arrival_Time = float(request.form['Arrival_Time'])
-        Duration = float(request.form['Duration'])
-        Total_Stops = float(request.form['Total_Stops'])
-
+        Airline = str(request.form['Airline'])
+        Date_of_Journey = request.form['Date_of_Journey']
+        Source = str(request.form['Source'])
+        Destination = str(request.form['Destination'])
+        Dep_Time = request.form['Dep_Time']
+        Arrival_Time = request.form['Arrival_Time']
+        Duration = str(request.form['Duration'])
+        Total_Stops = str(request.form['Total_Stops'])
+        
         flight_data = FlightData(
             Airline=Airline,
             Date_of_Journey=Date_of_Journey,
@@ -91,6 +90,7 @@ def predict():
             Duration=Duration,
             Total_Stops=Total_Stops                     
             )
+        
         flight_df = flight_data.get_flight_input_data_frame()
         flight_predictor = FlightPredictor(model_dir=MODEL_DIR)
         flight_price = flight_predictor.predict(X=flight_df)
@@ -101,7 +101,14 @@ def predict():
         return render_template('predict.html', context=context)
     return render_template("predict.html", context=context)
 
-
+@app.route('/batch_predict', methods=['GET', 'POST'])
+def batch_predict():
+    context = None
+    if request.method == "POST":
+        test_file = request.files['Upload File']
+        print(test_file)
+        return render_template("batch_predict.html",context=context)
+    return render_template("batch_predict.html", context=context)
 
 
 

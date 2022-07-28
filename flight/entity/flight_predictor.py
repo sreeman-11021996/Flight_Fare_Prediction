@@ -34,14 +34,14 @@ class FlightData:
     def get_flight_data_as_dict(self):
         try:
             input_data = {
-                DATE_OF_JOURNEY_KEY : self.Date_of_Journey,
-                DEP_TIME_KEY : self.Dep_Time,
-                ARRIVAL_TIME_KEY : self.Arrival_Time,
-                DURATION_KEY : self.Duration,
-                AIRLINE_KEY : self.Airline,
-                SOURCE_KEY : self.Source,
-                DESTINATION_KEY : self.Destination,
-                TOTAL_STOPS_KEY : self.Total_Stops
+                DATE_OF_JOURNEY_KEY : [self.Date_of_Journey],
+                DEP_TIME_KEY : [self.Dep_Time],
+                ARRIVAL_TIME_KEY : [self.Arrival_Time],
+                DURATION_KEY : [self.Duration],
+                AIRLINE_KEY : [self.Airline],
+                SOURCE_KEY : [self.Source],
+                DESTINATION_KEY : [self.Destination],
+                TOTAL_STOPS_KEY : [self.Total_Stops]
             }
             
             return input_data
