@@ -1,0 +1,205 @@
+{% extends 'header.html' %}
+
+{% block head %}
+
+
+<title>Flight Fare Estimator</title>
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md-6 col-sm-12 col-xs-6 col-lg-6">
+
+
+        <form action="/predict" method="post">
+            <legend>Flight Fare Estimation Form</legend>
+            <div class="mb-3">
+                <label class="form-label">Airline</label>
+                <select class="form-control" name="Airline" placeholder="Enter a value of Airline"
+                    required>
+
+                    <option value="<Jet Airways">
+                        &lt;Jet Airways
+                    </option>
+                    <option value="IndiGo">
+                        IndiGo
+                    </option>
+                    <option value="Air India">
+                        Air India
+                    </option>
+                    <option value="Multiple carriers">
+                        Multiple carriers
+                    </option>
+                    <option value="SpiceJet">
+                        SpiceJet
+                    </option>
+                    <option value="Vistara">
+                        Vistara
+                    </option>
+                    <option value="Air Asia">
+                        Air Asia
+                    </option>
+                    <option value="GoAir">
+                        GoAir
+                    </option>
+                    <option value="Multiple carriers Premium economy">
+                        Multiple carriers Premium economy
+                    </option>
+                    <option value="Jet Airways Business">
+                        Jet Airways Business
+                    </option>
+                    <option value="Vistara Premium economy">
+                        Vistara Premium economy
+                    </option>
+
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Date_of_Journey</label>
+                <input class="form-control" type="text" name="Date_of_Journey" placeholder="Enter a value of Date_of_Journey"
+                    required />
+
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Source</label>
+                <select class="form-control" name="Source" placeholder="Enter a value of Source"
+                    required>
+
+                    <option value="<Delhi">
+                        &lt;Delhi
+                    </option>
+                    <option value="Kolkata">
+                        Kolkata
+                    </option>
+                    <option value="Banglore">
+                        Banglore
+                    </option>
+                    <option value="Mumbai">
+                        Mumbai
+                    </option>
+                    <option value="Chennai">
+                        Chennai
+                    </option>
+                    
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Destination</label>
+                <select class="form-control" name="Destination" placeholder="Enter a value of Destination"
+                    required>
+
+                    <option value="<Cochin">
+                        &lt;Cochin
+                    </option>
+                    <option value="Banglore">
+                        Banglore
+                    </option>
+                    <option value="Delhi">
+                        Delhi
+                    </option>
+                    <option value="New Delhi">
+                        New Delhi
+                    </option>
+                    <option value="Hyderabad">
+                        Hyderabad
+                    </option>
+                    <option value="Kolkata">
+                        Kolkata
+                    </option>
+                    
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Dep_Time</label>
+                <input class="form-control" type="text" name="Dep_Time"
+                    placeholder="Enter a value of Dep_Time" required />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Arrival_Time</label>
+                <input class="form-control" type="text" name="Arrival_Time" placeholder="Enter a value of Arrival_Time"
+                    required />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Duration</label>
+                <input class="form-control" type="text" name="Duration" placeholder="Enter a value of Duration"
+                    required />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Total_Stops</label>
+                <select class="form-control" name="Total_Stops" placeholder="Enter a value of Total_Stops"
+                    required>
+
+                    <option value="<non-stop">
+                        &lt;non-stop
+                    </option>
+                    <option value="1 stop">
+                        1 stop
+                    </option>
+                    <option value="2 stops">
+                        2 stops
+                    </option>
+                    <option value="3 stops">
+                        3 stops
+                    </option>
+                    <option value="4 stops">
+                        4 stops
+                    </option>
+
+                </select>
+            </div>
+            <div class="mb-3">
+
+                <input class="btn btn-primary" type="submit" value="Predict Flight Fare" required />
+            </div>
+
+        </form>
+    </div>
+
+    <div class="col-md-6 col-sm-12 col-xs-6 col-lg-6">
+        <div class="card">
+            <div class="card-header">
+              Flight Fare
+            </div>
+            <div class="card-body">
+        {% if context['flight_data'] is not none %}
+        <table class="table table-striped">
+            <caption>Flight Fare Prediction </caption>
+            <tr>
+                <th>Input Feature</th>
+                <th>Feature Value</th>
+
+            </tr>
+            {% for column,value in context['flight_data'].items() %}
+
+
+
+            <tr>
+                <td>{{column}}</td>
+                <td>{{value[0]}}</td>
+            </tr>
+
+            {% endfor %}
+            <tr>
+
+                <td>Flight Price </td>
+                <td>
+                    {{ context['Flight Price'] }}
+                </td>
+            </tr>
+        </table>
+
+        {% else %}
+       
+              <h5 class="card-title">Submit Form</h5>
+              <p class="card-text">Kindly provide necessary information to estimate Flight Fare</p>
+            
+         
+
+        {% endif %}
+        Go to <a href="/" class="btn btn-primary">Home</a>
+    </div>
+</div>
+    </div>
+
+    {% endblock %}
