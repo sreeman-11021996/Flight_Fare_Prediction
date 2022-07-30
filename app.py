@@ -104,7 +104,7 @@ def predict():
         return render_template('predict.html', context=context)
     return render_template("predict.html", context=context)
 
-@app.route('/batch_predict', methods=['GET', 'POST'])
+"""@app.route('/batch_predict', methods=['GET', 'POST'])
 def batch_predict():
     context = {
         FLIGHT_DATA_KEY: None,
@@ -127,7 +127,7 @@ def batch_predict():
         
         return render_template("batch_predict.html",context=context)
     return render_template("batch_predict.html", context=context)
-
+"""
 
 if __name__ == "__main__":
     app.run(port=5000)
