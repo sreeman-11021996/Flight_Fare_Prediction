@@ -20,12 +20,17 @@ model_selection:
     params:
       n_jobs : -1
       random_state : 42
+      criterion : absolute_error
+      n_estimators : 100
     search_param_grid:
       max_depth:
-      - 8
       - 16
       - 24
       - 32
+      n_estimators:
+      - 100
+      - 150
+
   module_2:
     class: XGBRegressor
     module: xgboost
@@ -33,20 +38,26 @@ model_selection:
       max_depth : 3
       learning_rate : 0.1
       n_estimators : 100
-      objective : "reg:linear"
       n_jobs : -1
       random_state : 42
     search_param_grid:
+      max_depth : 
+      - 3
+      - 5
       n_estimators:
-      - 50
       - 100
-      - 150
+      - 500
+      reg_lambda:
+      - 1
+      - 5
   module_3:
     class: Lasso
     module: sklearn.linear_model
     params:
       alpha: 0.1
+      fit_intercept: true
     search_param_grid:
       alpha :
       - 0.1
-      - 0.25
+      - 0.15
+      - 0.2
